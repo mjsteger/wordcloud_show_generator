@@ -20,7 +20,11 @@ class WordcloudController < ApplicationController
       transcript_href = TRANSCRIPT_URL + @episodes[params[:episode]]
       episode_transcript = Nokogiri::HTML(open(transcript_href))
       text = episode_transcript.css(".scrolling-script-container").children.map(&:text)
-      text_array = text.join.gsub(/\r|\n|\[ [^\]]+ \]/x, "").scan(/\b[\w|']+\b/)
+      text_array = text.
+        join.
+        encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '').
+        gsub(/\r|\n|\[ [^\]]+ \]/x, "").
+        scan(/\b[\w|']+\b/)
       hash = Hash.new { |hash, key| hash[key] = 0 }
       text_array.each { |x| hash[x]+= 1 }
       to_delete = %w(a the it of to and is this was I you me that on)
