@@ -1,0 +1,17 @@
+-# - if params[:tv_show].nil?
+
+- if @seasons && !@episodes
+  - @seasons.each do |season|
+    %a{href: add_param(request.fullpath, "season", season)} #{season}
+    %br
+- if @episodes && !@word_array
+  - @episodes.each do |name, href|
+    %a{href: add_param(request.fullpath, "episode", name)} #{name}
+    %br
+:javascript
+  var word_array = #{raw @word_array.to_json}
+  $(function() {
+    $("#example").jQCloud(word_array);
+  });
+
+%div{id:"example", style: "width: 1080px; height: 800px;"}
