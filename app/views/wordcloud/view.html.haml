@@ -9,10 +9,9 @@
     %a{href: add_param(request.fullpath, "episode", name)} #{name}
     %br
 :javascript
-  window.onload = (function() {
-    $(function() {
-      $("#wordcloud").jQCloud(#{raw @word_array.to_json});
-    })});
+  $(function() {
+    $("#wordcloud").jQCloud(#{raw @word_array.to_json});
+  });
 
 
 %div{id:"wordcloud", style: "width: 1080px; height: 800px;"}
