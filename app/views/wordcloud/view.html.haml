@@ -8,10 +8,42 @@
   - @episodes.each do |name, href|
     %a{href: add_param(request.fullpath, "episode", name)} #{name}
     %br
-:javascript
-  $(function() {
-    $("#wordcloud").jQCloud(#{raw @word_array.to_json});
-  });
 
+- if params[:visualization] != "instant"
+  :javascript
+    $(function() {
+      $("#wordcloud").jQCloud(#{raw @word_array.to_json});
+      });
 
-%div{id:"wordcloud", style: "width: 1080px; height: 800px;"}
+  %div{id:"wordcloud", style: "width: 1080px; height: 800px;"}
+
+- else
+  :javascript
+    var fill = d3.scale.category20();
+    var word_array = #{raw @word_array.to_json}
+    d3.layout.cloud().size([900, 900])
+      .words(word_array)
+      .padding(5)
+      .rotate(function() { return ~~(Math.random() * 2) * 90; })
+      .font("Impact")
+      .fontSize(function(d) { return d.size; })
+      .on("end", draw)
+      .start();
+    function draw(words) {
+      d3.select("body").append("svg")
+          .attr("width", 900)
+          .attr("height", 900)
+          .append("g")
+          .attr("transform", "translate(450,450)")
+          .selectAll("text")
+          .data(words)
+          .enter().append("text")
+          .style("font-size", function(d) { return d.size + "px"; })
+          .style("font-family", "Impact")
+          .style("fill", function(d, i) { return fill(i); })
+          .attr("text-anchor", "middle")
+          .attr("transform", function(d) {
+              return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+          })
+          .text(function(d) { return d.text; });
+    }
